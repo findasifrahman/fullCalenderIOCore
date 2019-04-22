@@ -1,0 +1,357 @@
+﻿@model FullCalenderIOMVCCore.Models.eventDday
+
+@{
+    ViewBag.Title = "Edit";
+}
+<style>
+    .fieldset.scheduler-border {
+        border: 1px groove #ddd !important;
+        padding: 0 1.4em 1.4em 1.4em !important;
+        margin: 0 0 1.5em 0 !important;
+        -webkit-box-shadow: 0px 0px 0px 0px #000;
+        box-shadow: 0px 0px 0px 0px #000;
+    }
+
+    .legend.scheduler-border {
+        font-size: 1.2em !important;
+        font-weight: bold !important;
+        text-align: left !important;
+    }
+</style>
+<script type="text/javascript">
+        var specialKeys = new Array();
+        specialKeys.push(8); //Backspace
+        specialKeys.push(9); //Tab
+        specialKeys.push(46); //Delete
+        specialKeys.push(36); //Home
+        specialKeys.push(35); //End
+        specialKeys.push(37); //Left
+        specialKeys.push(39); //Right
+        function IsAlphaNumeric(e) {
+            var keyCode = e.keyCode == 0 ? e.charCode : e.keyCode;
+            var ret = ((keyCode >= 48 && keyCode <= 57) || (keyCode >= 65 && keyCode <= 90) || (keyCode >= 97 && keyCode <= 122) || (specialKeys.indexOf(e.keyCode) != -1 && e.charCode != e.keyCode));
+            //document.getElementById("error").style.display = ret ? "none" : "inline";
+            return ret;
+        }
+</script>
+
+@section Scripts{
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.18.1/moment.min.js"></script>
+    <script type="text/javascript">
+        var specialKeys = new Array();
+        specialKeys.push(8); //Backspace
+        specialKeys.push(9); //Tab
+        specialKeys.push(46); //Delete
+        specialKeys.push(36); //Home
+        specialKeys.push(35); //End
+        specialKeys.push(37); //Left
+        specialKeys.push(39); //Right
+        specialKeys.push(32); //Right
+        specialKeys.push(189); //Right
+        function IsAlphaNumeric(e) {
+            var keyCode = e.keyCode == 0 ? e.charCode : e.keyCode;
+            var ret = ((keyCode >= 48 && keyCode <= 57) || (keyCode >= 65 && keyCode <= 90) || (keyCode >= 97 && keyCode <= 122) || (specialKeys.indexOf(e.keyCode) != -1 && e.charCode != e.keyCode || keyCode == 32) || keyCode == 189);
+            //document.getElementById("error").style.display = ret ? "none" : "inline";
+            return ret;
+        }
+    </script>
+
+    <script>
+        $(document).ready(function () {
+            var tableIndex = 0;
+            var DdayDetails = [];
+            $('#Subject').siblings('span.error').css('visibility', 'hidden');
+            $('#Description').siblings('span.error').css('visibility', 'hidden');
+            $('#start').siblings('span.error').css('visibility', 'hidden');
+
+            $("#EventDay").change(function () {
+                $("#Subject").val($('#EventDay').val() + " - 0");
+                //alert("The text has been changed.");
+            });
+            mf();
+            function mf(){
+
+
+                $.ajax({
+                    type: "GET",
+                    url: "/eventDdays/allEventsbyid" ,//"/home/GetEvents",
+                    data:{id: '@Model.Id'},
+                    success: function (pata) {
+                        //alert(@Model.Id);
+                        data = pata.ddayDetails;
+                        console.log(pata);
+                        $.each(data, function (i, v) {
+                            var st = new Date(moment(v.start));
+                            st.setHours(12, st.getTimezoneOffset(), 0, 0);
+                            var isdate = st.toISOString();
+                            var stdate = isdate.substring(0, isdate.length - 1);
+                            st = new Date(moment(v.end));
+                            st.setHours(12, st.getTimezoneOffset(), 0, 0);
+                            isdate = st.toISOString();
+                            var enddate = isdate.substring(0, isdate.length - 1);
+                            DdayDetails.push({
+                                Id: 0,//v.Id,
+                                //eventDdayId: v.eventDdayId,
+                                Subject: v.subject,
+                                //Id: v.id,
+                                Description: v.description,
+                                start: stdate,
+                                end: enddate,
+                                Color: v.color,
+                                isFullDay: v.isFullDay
+                            });
+                        })
+                        changeDateVal();
+                        tableIndex = DdayDetails.length -1 ;
+                        GeneratedItemsTable();
+                    },
+                    error: function (error) {
+                        alert('failed');
+                    }
+                })
+                //$("#Dday").val(dt.toISOString());
+
+            }
+            function changeDateVal() {
+                if (tableIndex == 0) {
+                    var date = new Date($("#Dday").val());
+                    var newdate = new Date(date);
+                    newdate.setHours(-12, newdate.getTimezoneOffset(), 0, 0);// Remove Time Zone Offset
+                }
+                else {
+                    var date = new Date($("#end").val());
+                    var newdate = new Date(date);
+                    newdate.setHours(12, newdate.getTimezoneOffset(), 0, 0);// Remove Time Zone Offset
+                }
+
+                newdate.setDate(newdate.getDate() + 1);
+                var dts = newdate.toISOString();
+                $("#start").val(dts.substring(0, dts.length - 1));
+                newdate.setDate(newdate.getDate() + 1);
+                dts = newdate.toISOString();
+                $("#end").val(dts.substring(0, dts.length - 1));
+            };
+            $("#Dday").change(function () {
+                changeDateVal();
+            });
+
+            $('#add').click(function () {
+                var isValidItem = true;
+                if ($('#EventDay').val().trim() == '') {
+                    alert('Please Add Event Name First');
+                    return
+                }
+                if ($('#Subject').val().trim() == '') {
+                    alert("Please add a Subject");
+                    return;
+                }
+
+
+                if (isValidItem)
+                {
+                    DdayDetails.push({
+                        Id:0,
+                        Subject: $('#Subject').val().trim(),
+                        Description: $('#Description').val().trim(),
+                        start: $('#start').val(),
+                        end: $('#end').val(),
+                        Color: $('#Color').val().trim(),
+                        isFullDay: $('#isFullDay').is(":checked") || false
+                    });
+                }
+                GeneratedItemsTable();
+            });
+
+            function GeneratedItemsTable() {
+                tableIndex++;
+                $("#Subject").val($('#EventDay').val() + " - " + tableIndex.toString());
+                changeDateVal();
+                {
+                    var $table = $('<table class="table"/>');
+                    $table.append('<thead><th >Subject</th><th style="text-align:center">Description</th><th style="text-align:center">Start</th><th style="text-align:center">End</th><th style="text-align:center">Color</th><th style="text-align:center">IsFullDay</th><th style="text-align:right"></th></tr></thead>');
+                    var $tbody = $('<tbody/>');
+                    $.each(DdayDetails, function (i, val) {
+                        var $row = $('<tr/>');
+                        $row.append($('<td />').html(val.Subject));
+                        $row.append($('<td  style="text-align:center"/>').html(val.Description));
+                        $row.append($('<td  style="text-align:center"/>').html(val.start));
+                        $row.append($('<td  style="text-align:center"/>').html(val.end));
+                        $row.append($('<td  style="text-align:center"/>').html(val.Color));
+                        $row.append($('<td  style="text-align:center"/>').html(val.isFullDay));
+                        var $remove = $('<a href="#" style="color:red">Remove</a>');
+                        $remove.click(function (e) {
+                            tableIndex--;
+                            e.preventDefault();
+                            DdayDetails.splice(i, 1);
+                            GeneratedItemsTable();
+                        });
+                        $row.append($('<td style="color:red;text-align:right"/>').html($remove));
+                        $tbody.append($row);
+                    });
+                    console.log("current", DdayDetails);
+                    $table.append($tbody);
+                    $('#DdayDetails').html($table);
+
+
+                }
+
+            }
+            //////////
+            $('#submit').click(function () {
+                var isAllValid = true;
+
+                if ($('#EventDay').val().trim() == '') {
+                    $('#EventDay').siblings('span.error').css('visibility', 'visible');
+                    isAllValid = false;
+                }
+                else {
+                    $('#EventDay').siblings('span.error').css('visibility', 'hidden');
+                }
+                if ($('#Dday').val().trim() == '') {
+                    $('#Dday').siblings('span.error').css('visibility', 'visible');
+                    isAllValid = false;
+                }
+                else {
+                    $('#Dday').siblings('span.error').css('visibility', 'hidden');
+                }
+
+                var data = {
+                    //Id: @Model.Id,
+                    EventDay: $('#EventDay').val().trim(),
+                    Dday: $('#Dday').val().trim(),
+                    DdayDetails: DdayDetails
+                }
+
+                $(this).val('Please wait...');
+                console.log(data);
+                $.ajax({
+                    url: '/eventDdays/edit?mid=' + @Model.Id,
+                    type: "POST",
+                    data: data,
+                    success: function (d) {
+                        //check is successfully save to database
+                        if (d.status == true) {
+                            alert('Successfully done.');
+                            window.location.href = "/eventDdays/Index";
+                            //clear form
+
+                        }
+                        else {
+                            alert('Failed');
+                        }
+                        $('#submit').val('Save');
+                    },
+                    error: function () {
+                        alert('Error. Please try again.');
+                        $('#submit').val('Save');
+                    }
+                });
+
+            });
+
+
+
+        })
+
+    </script>
+}
+
+<div class="container">
+    <h4 style="text-align:center;color:orangered">Update Event</h4>
+
+    <div class="form-horizontal">
+        @Html.ValidationSummary(true, "", new { @class = "text-danger" })
+        <fieldset style="font-size:small" class="scheduler-border">
+            <legend style="font-size:small;color:darkblue" class="scheduler-border">Update Event</legend>
+            <div class="row col-md-12">
+                <div class="col-md-6">
+                    <div class="form-group">
+                        <label class="control-label col-md-2">EventDay</label>
+                        <div class="col-md-10">
+                            <input type="text" value="@Model.EventDay" id="EventDay" class="form-control input-sm" onkeypress="return IsAlphaNumeric(event);"
+                                   ondrop="return false;" onpaste="return IsAlphaNumeric(event);" />
+                            <span class="error text-danger">*</span>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-6">
+                    <div class="form-group">
+                        <label class="control-label col-md-3">Dday Date</label>
+                        <div class="col-md-9">
+                            @Html.EditorFor(model => model.Dday, new { htmlAttributes = new { @class = "form-control input-sm " } })
+
+                            <span class="error text-danger">*</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </fieldset>
+        <br />
+
+
+        <div class="form-group">
+            <fieldset style="font-size:small" class="scheduler-border">
+                <legend style="font-size:small;color:darkblue" class="scheduler-border">Dday Details</legend>
+                <div class="table-responsive">
+                    <table id="myTable" class="table">
+                        <tr>
+                            <td style="text-align:center">Subject</td>
+                            <td style="text-align:center">Description</td>
+                            <td style="text-align:center">start </td>
+                            <td style="text-align:center">end </td>
+                            <td style="text-align:center">Color </td>
+                            <td style="text-align:center">isFullDay  </td>
+                            <td style="text-align:right">&nbsp;</td>
+                        </tr>
+                        <tr>
+                            <td>
+                                <input class="form-control input-sm" type="text" name="Subject" id="Subject" onkeypress="return IsAlphaNumeric(event);"
+                                       ondrop="return false;" onpaste="return IsAlphaNumeric(event);" />
+                                <span class="error text-danger">Subject required</span>
+                            </td>
+                            <td>
+                                <input class="form-control input-sm" type="text" name="Description" id="Description" />
+                                <span class="error text-danger">Description required</span>
+                            </td>
+                            <td>
+                                <input class="form-control input-sm" name="start" id="start" type="datetime-local" value="2019-04-18T00:00" />
+                                <span class="error text-danger">start Date required</span>
+                            </td>
+                            <td>
+                                <input class="form-control input-sm" name="end" id="end" type="datetime-local" value="2019-04-19T00:00" />
+
+                            </td>
+                            <td>
+                                <select name="Color" id="Color" class="form-control input-sm">
+                                    <option value="red">NULL</option>
+                                    <option value="red">Red</option>
+                                    <option value="green">Green</option>
+                                    <option value="blue">Blue</option>
+                                    <option value="black">Black</option>
+                                </select>
+                            </td>
+                            <td>
+                                <input class="input-sm" style="width:50px" name="isFullDay" id="isFullDay" type="checkbox" />
+
+                            </td>
+                            <td>
+                                <input type="button" id="add" value="add" class="btn btn-info btn-sm" />
+                            </td>
+                        </tr>
+                    </table>
+                </div>
+            </fieldset>
+            <fieldset class="scheduler-border">
+                <legend style="font-size:small;color:darkblue" class="scheduler-border">Table Details</legend>
+                <div id="DdayDetails" class="table-responsive" style="font-size:small">
+                </div>
+            </fieldset>
+            <br />
+            <input style="width:100%" id="submit" type="button" value="Save" class="btn btn-info" />
+        </div>
+
+    </div>
+
+
+</div>
+
