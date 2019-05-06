@@ -1,0 +1,82 @@
+﻿@model IEnumerable<FullCalenderEvent.Models.eventFiles>
+
+@{
+    ViewBag.Title = "Index";
+}
+<style>
+    .fieldset.scheduler-border {
+        border: 1px groove #ddd !important;
+        padding: 0 1.4em 1.4em 1.4em !important;
+        margin: 0 0 1.5em 0 !important;
+        -webkit-box-shadow: 0px 0px 0px 0px #000;
+        box-shadow: 0px 0px 0px 0px #000;
+    }
+
+    .legend.scheduler-border {
+        font-size: 1.2em !important;
+        font-weight: bold !important;
+        text-align: left !important;
+    }
+</style>
+
+<div id="throbber" style="display:none; min-height:80px;"></div>
+<div id="noty-holder"></div>
+<div id="wrapper">
+
+    <!-- Sidebar Menu Items - These collapse to the responsive navigation menu on small screens -->
+    <div class="collapse navbar-collapse navbar-ex1-collapse">
+        <ul class="nav navbar-nav side-nav">
+            <li>
+                <a href="/home/index" data-toggle="collapse" data-target="#submenu-2" style="color:white;font-weight:bolder;"><i class="fa fa-fw fa-fw"></i> All Running Event <i class="fa fa-fw fa-angle-down pull-right"></i></a>
+                <ul id="submenu-2" class="collapse"></ul>
+            </li>
+            @if (ViewBag.dlist != null)
+            {
+                foreach (var item in ViewBag.dlist)
+                {
+                    <li>
+                        <a href="/home/index?Id=@item.Id" data-toggle="collapse" data-target="#submenu-1" style="color:whitesmoke"><i class="fa fa-fw fa-search"></i> @item.EventDay <i class="fa fa-fw fa-angle-down pull-right"></i></a>
+                        <ul id="submenu-1" class="collapse">
+                            <li><a href="#"><i class="fa fa-angle-double-right"></i> SUBMENU 1.1</a></li>
+                        </ul>
+                    </li>
+                }
+            }
+
+        </ul>
+    </div>
+
+    <!-- /#page-wrapper -->
+</div><!-- /#wrapper -->
+<br/>
+<div class="container" style="padding-left:120px !important">
+    <h2 style="text-align:center;color:cornflowerblue;font-weight:bold">All Event Files</h2>
+    <br/>
+    <br/>
+    <fieldset style="font-size:small" class="scheduler-border">
+        <legend style="font-size:small;color:darkblue" class="scheduler-border">Files</legend>
+        <table class="table table-bordered table-striped">
+            <tr style="color:blue">
+                <th>
+                    @Html.DisplayName("Event Name")
+                </th>
+                <th>Files</th>
+            </tr>
+            @if (Model != null)
+            {
+                foreach (var item in Model)
+                {
+                <tr>
+                    <td style="color:lightcoral">
+                        @Html.DisplayFor(modelItem => item.EventName)
+                    </td>
+                    <td>
+                        <a href="@Url.Content(item.fileFolder)" hea target="_blank" ><i class="fa fa-file-pdf-o fa-2x" style="color:darkred" aria-hidden="true"></i> </a>
+                    </td>
+                </tr>
+                }
+            }
+
+        </table>
+    </fieldset>
+</div>

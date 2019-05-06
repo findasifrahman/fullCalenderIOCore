@@ -1,6 +1,7 @@
 ﻿@model FullCalenderEvent.Models.DdayDetails
-
+@using FullCalenderEvent.Controllers;
 @{
+    Layout = "~/Views/Shared/_adminLayout.cshtml";
     ViewBag.Title = "Create";
 }
 <style>
@@ -18,6 +19,8 @@
     text-align: left !important;
 }
 </style>
+
+
 <script type="text/javascript">
         var specialKeys = new Array();
         specialKeys.push(8); //Backspace
@@ -67,23 +70,41 @@
                 $("#Subject").val($('#EventDay').val() + " - 0");
                 //alert("The text has been changed.");
             });
+            function keyevent() {
+                var vr = $("#Subject").val().match(/\d+/)
+                if (vr != null) {
+                    var date = new Date($("#Dday").val());
+                    var newdate = new Date(date);//vr;
+                    newdate.setDate(newdate.getDate() - vr + 1);
+                    newdate.setHours(-12, newdate.getTimezoneOffset(), 0, 0);// Remove Time Zone Offset
 
+                    var dts = newdate.toISOString();
+                    $("#start").val(dts.substring(0, dts.length - 1));
+                    newdate.setDate(newdate.getDate() + 1);
+                    dts = newdate.toISOString();
+                    $("#end").val(dts.substring(0, dts.length - 1));
+                }
+            }
+            $("#Subject").keypress(function () {
+                keyevent();
+            });
+            $("#Subject").keydown(function () {
+                keyevent();
+            });
+            $("#Subject").keyup(function () {
+                keyevent();
+            });
             function changeDateVal() {
-                if (tableIndex == 0) {
                     var date = new Date($("#Dday").val());
                     var newdate = new Date(date);
                     newdate.setHours(-12, newdate.getTimezoneOffset(), 0, 0);// Remove Time Zone Offset
-                }
-                else {
-                    var date = new Date($("#end").val());
-                    var newdate = new Date(date);
-                    newdate.setHours(12, newdate.getTimezoneOffset(), 0, 0);// Remove Time Zone Offset
-                }
+                
+
 
                 newdate.setDate(newdate.getDate() + 1);
                 var dts = newdate.toISOString();
                 $("#start").val(dts.substring(0, dts.length - 1));
-                newdate.setDate(newdate.getDate() + 1);
+                newdate.setDate(newdate.getDate() + 0);
                 dts = newdate.toISOString();
                 $("#end").val(dts.substring(0, dts.length - 1));
             };
@@ -98,7 +119,7 @@
                 var isValidItem = true;
                 if ($('#EventDay').val().trim() == '') {
                     alert('Please Add Event Name First');
-                    return
+                    return;
                 }
                 if ($('#Subject').val().trim() == '') {
                     alert("Please add a Subject");
@@ -124,10 +145,10 @@
             function GeneratedItemsTable() {
                 tableIndex++;
                 $("#Subject").val($('#EventDay').val() + " - " + tableIndex.toString());
-                changeDateVal();
+                //changeDateVal();
                 {
                     var $table = $('<table class="table"/>');
-                    $table.append('<thead><th >Subject</th><th style="text-align:center">Description</th><th style="text-align:center">Start</th><th style="text-align:center">End</th><th style="text-align:center">Color</th><th style="text-align:center">IsFullDay</th><th style="text-align:right"></th></tr></thead>');
+                    $table.append('<thead><th >Subject</th><th style="text-align:center">Description</th><th style="text-align:center">Start</th><th style="text-align:center">End</th><th style="text-align:center">Color</th><th style="text-align:center">Full Day</th><th style="text-align:right"></th></tr></thead>');
                     var $tbody = $('<tbody/>');
                     $.each(DdayDetails, function (i, val) {
                         var $row = $('<tr/>');
@@ -150,13 +171,7 @@
                     console.log("current", DdayDetails);
                     $table.append($tbody);
                     $('#DdayDetails').html($table);
-                    //var y = new Date();//.AddDays(24);
-                    //alert(y);
-                    //var isoStr = y.toISOString();
-                    //$("#start").val(isoStr.substring(0,isoStr.length-1));
-
                 }
-
             }
             //////////
             $('#submit').click(function () {
@@ -183,6 +198,8 @@
                     var data = {
                         EventDay: $('#EventDay').val().trim(),
                         Dday: $('#Dday').val().trim(),
+                        mainColor: $('#mainColor').val().trim(),
+                        isFullDayMain: $('#isFullDayMain').is(":checked") || false,
                         DdayDetails: DdayDetails
                     }
                 }
@@ -210,44 +227,60 @@
                         $('#submit').val('Save');
                     }
                 });
-
             });
 
-
-
         })
-
+        ///////////////////////////
+        //////////////////////////
     </script>
 }
 
-<div class="container">
+<div class="container" style="margin-left:30px">
     <h4 style="text-align:center;color:orangered">Create New Event</h4>
-
     <div class="form-horizontal">
         @Html.ValidationSummary(true, "", new { @class = "text-danger" })
         <fieldset style="font-size:small" class="scheduler-border">
             <legend style="font-size:small;color:darkblue" class="scheduler-border">Create New Event</legend>
             <div class="row col-md-12">
-                <div class="col-md-6">
+                <div class="col-md-4">
                     <div class="form-group">
-                        @Html.Label("EventDay", htmlAttributes: new { @class = "control-label col-md-2" })
-                        <div class="col-md-10">
+                        @Html.Label("Event*", htmlAttributes: new { @class = "control-label col-md-3",@style = "color:red" })
+                        <div class="col-md-9">
                             <input type="text" id="EventDay" class="form-control input-sm" onkeypress="return IsAlphaNumeric(event);"
                                    ondrop="return false;" onpaste="return IsAlphaNumeric(event);" />
-                            <span class="error text-danger">*</span>
+                            <span class="error text-danger"></span>
                         </div>
                     </div>
                 </div>
-                <div class="col-md-6">
+                <div class="col-md-3">
                     <div class="form-group">
-                        @Html.Label("Dday Date", htmlAttributes: new { @class = "control-label col-md-3" })
-                        <div class="col-md-9">
-                            <input type="datetime-local" id="Dday" name="Dday" class="form-control input-sm" value="2019-01-01T00:00" />
-                            <span class="error text-danger">*</span>
+                        @Html.Label("Dday*", htmlAttributes: new { @class = "control-label col-md-2", @style = "color:red" })
+                        <div class="col-md-10">
+                            <input type="datetime-local" id="Dday" name="Dday" class="form-control input-sm" value="2019-04-01T00:00" />
+                            <span class="error text-danger"></span>
                         </div>
                     </div>
                 </div>
+                <div class="col-md-3">
+                    <div class="form-group">
+                        @Html.Label("Color", htmlAttributes: new { @class = "control-label col-md-6", @style = "color:red" })
+                        <div class="col-md-6">
+                            <input class="form-control input-sm" name="mainColor" id="mainColor" type="text" value="@ViewBag.colorval" disabled />
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-2">
+                    <div class="form-group">
+                        @Html.Label("Full Day", htmlAttributes: new { @class = "control-label col-md-6", @style = "color:red" })
+                        <div class="col-md-6">
+                            <input class="input-sm" style="width:50px" name="isFullDayMain" id="isFullDayMain" type="checkbox" />
+                            <span class="error text-danger"></span>
+                        </div>
+                    </div>
+                </div>
+
             </div>
+
         </fieldset>
         <br />
 
@@ -262,14 +295,14 @@
                             <td style="text-align:center">Description</td>
                             <td style="text-align:center">start </td>
                             <td style="text-align:center">end </td>
-                            <td style="text-align:center">Color </td>
-                            <td style="text-align:center">isFullDay  </td>
+                            <td style="text-align:center" hidden>Color </td>
+                            <td style="text-align:center">Full Day  </td>
                             <td style="text-align:right">&nbsp;</td>
                         </tr>
                         <tr>
                             <td>
-                                <input class="form-control input-sm" type="text" name="Subject" id="Subject" onkeypress="return IsAlphaNumeric(event);"
-                                       ondrop="return false;" onpaste="return IsAlphaNumeric(event);" />
+                                <input class="form-control input-sm" type="text" name="Subject" id="Subject" 
+                                       ondrop="return false;"  />
                                 <span class="error text-danger">Subject required</span>
                             </td>
                             <td>
@@ -284,14 +317,15 @@
                                 <input class="form-control input-sm" name="end" id="end" type="datetime-local" value="2019-04-19T00:00" />
 
                             </td>
-                            <td>
-                                <select name="Color" id="Color" class="form-control input-sm">
+                            <td hidden>
+                                <input class="form-control input-sm" name="Color" id="Color" type="text" value="@ViewBag.colorval" disabled />
+                                @*<select name="Color" id="Color" class="form-control input-sm">
                                     <option value="red">NULL</option>
                                     <option value="red">Red</option>
                                     <option value="green">Green</option>
                                     <option value="blue">Blue</option>
                                     <option value="black">Black</option>
-                                </select>
+                                </select>*@
                             </td>
                             <td>
                                 <input class="input-sm" style="width:50px" name="isFullDay" id="isFullDay" type="checkbox" />
@@ -309,11 +343,11 @@
                 <div id="DdayDetails" class="table-responsive" style="font-size:small">
                 </div>
             </fieldset>
-                <br />
-                <input style="width:100%" id="submit" type="button" value="Save" class="btn btn-info" />
+            <br />
+            <div style="text-align:center">
+                <input style="width:25%;font-size:larger" id="submit" type="button" value="Save" class="btn btn-info" />
+            </div>
         </div>
-
     </div>
-
-
 </div>
+

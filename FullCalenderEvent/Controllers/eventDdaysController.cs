@@ -8,6 +8,7 @@ using System.Web;
 using System.Web.Mvc;
 using FullCalenderEvent.Models;
 using System.Diagnostics;
+using PagedList;
 
 namespace FullCalenderEvent.Controllers
 {
@@ -16,9 +17,15 @@ namespace FullCalenderEvent.Controllers
         private ApplicationDbContext db = new ApplicationDbContext();
         [Authorize]
         // GET: eventDdays
-        public ActionResult Index()
+        public ActionResult Index(int? page, string SearchString)
         {
-            return View(db.eventDdays.Include(xx=> xx.DdayDetails).ToList());
+            int pageSize = 10;
+            int pageNumber = (page ?? 1);
+            if (SearchString != null)
+            {
+                return View(db.eventDdays.Where(x=> x.EventDay.Contains(SearchString)).ToList().ToPagedList(pageNumber, pageSize));
+            }
+            return View(db.eventDdays.ToList().ToPagedList(pageNumber, pageSize));
         }
         public ActionResult allEventsbyid(int? id)
         {
@@ -50,7 +57,7 @@ namespace FullCalenderEvent.Controllers
             {
                 return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
             }
-            eventDday eventDday = db.eventDdays.Find(id);
+            eventDday eventDday = db.eventDdays.Include(xx => xx.DdayDetails).FirstOrDefault(x=> x.Id== id);//.Find(id);
             if (eventDday == null)
             {
                 return HttpNotFound();
@@ -59,8 +66,15 @@ namespace FullCalenderEvent.Controllers
         }
         [Authorize]
         // GET: eventDdays/Create
-        public ActionResult Create()
+        public ActionResult Create(string ename)
         {
+            string colorname = "";
+            if(ename == "DDNT") { colorname = "dodgerblue";  }
+            else if (ename == "SOTI") { colorname = "red"; }
+            else if (ename == "SOTII") { colorname = "darkblue"; }
+            else if (ename == "OICTDEC") { colorname = "green"; }
+            else if (ename == "PA") { colorname = "orange"; }
+            ViewBag.colorval = colorname;
             return View();
         }
 
@@ -72,11 +86,9 @@ namespace FullCalenderEvent.Controllers
         //[ValidateAntiForgeryToken]
         public ActionResult Create(eventDday eventDday)
         {
-            //eventDday.Dday = Convert.ToDateTime(eventDday.Dday);
-            Debug.WriteLine("-----------------------------");
-            Debug.WriteLine(eventDday.Dday);
-            Debug.WriteLine(eventDday.DdayDetails);
-            Debug.WriteLine("-----------------------------");
+           // string colorname = "";
+           // ViewBag.colorval = eventDday.DdayDetails;
+
             foreach (ModelState modelState in ViewData.ModelState.Values)
             {
                 foreach (ModelError error in modelState.Errors)
@@ -103,6 +115,16 @@ namespace FullCalenderEvent.Controllers
             {
                 return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
             }
+            var dbcol = db.DdayDetails.Where(xx => xx.eventDdayId == id).FirstOrDefault();
+            if (dbcol != null)
+            {
+                ViewBag.colorname = dbcol.Color;
+            }
+            else
+            {
+               // ViewBag.colorname
+            }
+            
             eventDday eventDday = db.eventDdays.Include(xx => xx.DdayDetails).FirstOrDefault(x => x.Id == id);//.Find(id);
             if (eventDday == null)
             {

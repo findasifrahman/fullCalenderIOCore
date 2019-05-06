@@ -35,5 +35,7 @@ namespace FullCalenderEvent.Models
         public System.Data.Entity.DbSet<FullCalenderEvent.Models.eventDday> eventDdays { get; set; }
 
         public System.Data.Entity.DbSet<FullCalenderEvent.Models.DdayDetails> DdayDetails { get; set; }
+
+        public System.Data.Entity.DbSet<FullCalenderEvent.Models.eventFiles> eventFiles { get; set; }
     }
 }

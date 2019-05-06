@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.Linq;
 using System.Web;
+using System.Web.Mvc;
 
 namespace FullCalenderEvent.Models
 {
@@ -11,6 +12,11 @@ namespace FullCalenderEvent.Models
         public int Id { get; set; }
         public string EventDay { get; set; }
         public DateTime Dday { get; set; }
+        [UIHint("picture")]
+        [AdditionalMetadata("FieldName", "ReFile")]
+        public string ReFile { get; set; }
+        public bool isFullDayMain { get; set; }
+        public string mainColor{get;set;}
         public IList<DdayDetails> DdayDetails { get; set; }
     }
     public class DdayDetails

@@ -7,6 +7,8 @@
     @Styles.Render("~/Content/css")
     @Scripts.Render("~/bundles/modernizr")
 
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
 </head>
 <body>
     <div class="navbar navbar-inverse navbar-fixed-top">
@@ -17,12 +19,12 @@
                     <span class="icon-bar"></span>
                     <span class="icon-bar"></span>
                 </button>
-                @Html.ActionLink("Application name", "Index", "Home", new { area = "" }, new { @class = "navbar-brand" })
             </div>
             <div class="navbar-collapse collapse">
                 <ul class="nav navbar-nav">
-                    <li>@Html.ActionLink("Home", "Index", "Home")</li>
+                    <li style="color:yellow">@Html.ActionLink("Event Calender", "Index", "Home", new { area = "" }, new { @class = "navbar-brand",@style = "color:Yellow" })</li>
                     <li>@Html.ActionLink("Add Event", "Index", "eventDdays")</li>
+                    <li>@Html.ActionLink("View Archieve", "archievView", "Home")</li>
                 </ul>
                 @Html.Partial("_LoginPartial")
             </div>
@@ -31,8 +33,10 @@
     <div class=" body-content">
         @RenderBody()
         <hr />
-        <footer>
-            <p>&copy; @DateTime.Now.Year - Intricate LAB</p>
+        <footer style="background-color:dimgray;color:whitesmoke;text-align:center;height:80px">
+            <br/>
+            <p style="font-size:small">DNT -- Bangladesh NAVY</p>
+            <p style="font-size:smaller;color:yellow">&copy; @DateTime.Now.Year - Intricate LAB</p>
         </footer>
     </div>
 

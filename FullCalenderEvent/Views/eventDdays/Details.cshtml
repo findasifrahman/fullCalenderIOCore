@@ -1,34 +1,75 @@
 ﻿@model FullCalenderEvent.Models.eventDday
 
 @{
+    Layout = "~/Views/Shared/_adminLayout.cshtml";
     ViewBag.Title = "Details";
 }
+<style>
+    .fieldset.scheduler-border {
+        border: 1px groove #ddd !important;
+        padding: 0 1.4em 1.4em 1.4em !important;
+        margin: 0 0 1.5em 0 !important;
+        -webkit-box-shadow: 0px 0px 0px 0px #000;
+        box-shadow: 0px 0px 0px 0px #000;
+    }
 
-<h2>Details</h2>
+    .legend.scheduler-border {
+        font-size: 1.2em !important;
+        font-weight: bold !important;
+        text-align: left !important;
+    }
+</style>
+<div class="container">
+    <h2 style="text-align:center;font-weight:bolder;color:royalblue">Details of @Model.EventDay</h2>
+    <div>
+        <hr />
+        <dl class="dl-horizontal">
+            <dt style="color:blue">
+                Event : 
+            </dt>
 
-<div>
-    <h4>eventDday</h4>
-    <hr />
-    <dl class="dl-horizontal">
-        <dt>
-            @Html.DisplayNameFor(model => model.EventDay)
-        </dt>
+            <dd>
+                @Html.DisplayFor(model => model.EventDay)
+            </dd>
 
-        <dd>
-            @Html.DisplayFor(model => model.EventDay)
-        </dd>
+            <dt style="color:orangered">
+                Submission Day
+            </dt>
 
-        <dt>
-            @Html.DisplayNameFor(model => model.Dday)
-        </dt>
+            <dd>
+                @Html.DisplayFor(model => model.Dday)
+            </dd>
 
-        <dd>
-            @Html.DisplayFor(model => model.Dday)
-        </dd>
+        </dl>
+    </div>
+    <hr/>
+    <fieldset>
+        <legend style="font-size:small;color:darkblue" class="scheduler-border">Event Details</legend>
+        <table class="table table-bordered table-striped">
+            <tr style="color:dodgerblue">
+                <th style="color:darkblue">
+                    Subject
+                </th>
+                <th>
+                    Desccription
+                </th>
+                <th>Date</th>
+            </tr>
 
-    </dl>
+            @foreach (var item in Model.DdayDetails)
+            {
+                <tr>
+                    <td>
+                        @Html.DisplayFor(modelItem => item.Subject)
+                    </td>
+                    <td>
+                        @Html.DisplayFor(modelItem => item.Description)
+                    </td>
+                    <td style="color:forestgreen">
+                        @Html.DisplayFor(modelItem => item.start) to @Html.DisplayFor(modelItem => item.end)
+                    </td>
+                </tr>
+            }
+        </table>
+    </fieldset>
 </div>
-<p>
-    @Html.ActionLink("Edit", "Edit", new { id = Model.Id }) |
-    @Html.ActionLink("Back to List", "Index")
-</p>

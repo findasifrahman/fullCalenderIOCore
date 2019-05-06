@@ -1,0 +1,56 @@
+﻿@model FullCalenderEvent.Models.eventFiles
+
+@{
+    Layout = "~/Views/Shared/_adminLayout.cshtml";
+    ViewBag.Title = "Create";
+}
+@section Scripts{
+    <script>
+        $(document).ready(function () {
+            $('.selectpicker').selectpicker({
+                liveSearch: true,
+                showSubtext: false
+            });
+        })
+    </script>
+}
+<div class="container">
+    <h2 style="text-align:center">Add Event Files</h2>
+
+
+    @using (Html.BeginForm("Create", "eventFiles", FormMethod.Post, new { enctype = "multipart/form-data" }))
+    {
+        @Html.AntiForgeryToken()
+
+        <div class="form-horizontal">
+
+            <hr />
+            @Html.ValidationSummary(true, "", new { @class = "text-danger" })
+
+            <div class="form-group">
+                @Html.Label("Event Name", htmlAttributes: new { @class = "control-label col-md-2" })
+                <div class="col-md-5">
+                    @Html.DropDownList("EventName", (SelectList)ViewBag.evntlist, string.Empty, new { @class = "form-control selectpicker", data_live_search = "true", data_show_subtext = "false", @onchange = "CallChangefunc(this.value)" })
+                    @Html.ValidationMessageFor(model => model.EventName, "", new { @class = "text-danger" })
+                </div>
+            </div>
+
+            <div class="form-group">
+                <div class="col-md-offset-2 col-md-6">
+                    <div class="col-md-10 input-group">
+                        <span class="input-group-addon">File</span>
+                        <input class="btn btn-default form-control" type="file" title="search image" id="fileOther1Doc" name="fileOther1Doc" onchange="show3(this)" />
+                    </div>
+                </div>
+            </div>
+
+            <div class="form-group">
+                <div class="col-md-offset-2 col-md-10">
+                    <input type="submit" value="Create"  class="btn btn-default"  />
+                </div>
+            </div>
+        </div>
+    }
+</div>
+
+

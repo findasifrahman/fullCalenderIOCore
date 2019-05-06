@@ -1,0 +1,140 @@
+﻿@model string
+@using FullCalenderEvent.Controllers;
+
+<script src="~/Scripts/jquery-latest.js"></script>
+
+<link rel="stylesheet" href="~/Scripts/fineuploader/fineuploader-4.2.2.min.css" />
+<script type="text/javascript" src="~/Scripts/fineuploader/jquery.fineuploader-4.2.2.min.js"></script>
+
+@{
+    string randomString = "";
+    randomString = DateTime.Now.ToString("yyyyMMddHHmmssffff");
+    if (Model != null)
+    {
+        randomString = Model.Split('.')[0];
+
+    }
+}
+
+<input type="hidden" value="@Model" name="@ViewData.ModelMetadata.AdditionalValues["FieldName"]" id="@ViewData.ModelMetadata.AdditionalValues["FieldName"]" />
+<div id="ITReFile1">
+
+</div>
+<div id="value">
+    @Html.HiddenFor(x => x)
+</div>
+
+@if (Model == null)
+{
+    <span id="image">
+        <a><img width="100" height="70" src="~/Content/images/pdficon.png" style="display:none;" /> </a>
+    </span>
+}
+else
+{
+    <span id="image">
+        <a href="@pictureController.GetPictureUrl(Model)"><img width="100" height="70" src="~/Content/images/pdficon.png" /> </a>
+    </span>
+}
+
+
+@if (Model != null)
+{
+    <span id="remove" class="btn btn-danger">Remove File</span>
+}
+else
+{
+    <span id="remove" class="btn btn-danger" style="display:none;">Remove File</span>
+}
+
+<script type="text/template" id="qq-template">
+    <div class="qq-uploader-selector qq-uploader qq-gallery" qq-drop-area-text="Drop files here" style="width:120px">
+        <div class="qq-total-progress-bar-container-selector qq-total-progress-bar-container">
+            <div role="progressbar" aria-valuenow="0" aria-valuemin="0" aria-valuemax="100" class="qq-total-progress-bar-selector qq-progress-bar qq-total-progress-bar"></div>
+        </div>
+        <div class="qq-upload-drop-area-selector qq-upload-drop-area" qq-hide-dropzone>
+            <span class="qq-upload-drop-area-text-selector"></span>
+        </div>
+        <div class="qq-upload-button-selector qq-upload-button">
+            <div>Upload a file</div>
+        </div>
+        <span class="qq-drop-processing-selector qq-drop-processing">
+            <span>Processing dropped files...</span>
+            <span class="qq-drop-processing-spinner-selector qq-drop-processing-spinner"></span>
+        </span>
+        <ul class="qq-upload-list-selector qq-upload-list" role="region" aria-live="polite" aria-relevant="additions removals">
+            <li>
+
+            </li>
+        </ul>
+
+    </div>
+</script>
+<script type="text/javascript">
+    $(document).ready(function () {
+        
+               var uploader = new qq.FineUploader({
+
+                   element: document.getElementById("ITReFile1"),
+                    request: {  /* <-- THIS IS WHAT I NEED TO FIGURE OUT */
+                        endpoint: '@Url.Action("Upload", "picture", new { picid = randomString })'
+                    },
+
+                 autoUpload: true,
+                 multiple: false,
+                 text: {
+                    uploadButton: '<asp:Button ID="fineUploadButton" runat="server" CssClass="button" style="width:10;8" Text="Browse" />'
+                 },
+                 thumbnails: {
+                     placeholders: {
+                         waitingPath: '/fineuploader/placeholders/waiting-generic.png',
+                         notAvailablePath: '/fineuploader/placeholders/not_available-generic.png'
+                     }
+                 },
+                 validation: {
+                    allowedExtensions: ['pdf', 'jpg', 'png']
+                 },
+                 callbacks: {
+                     onComplete: function (id, fileName, responseJSON) {
+                         //alert(responseJSON.full);
+                         if (responseJSON.success) {
+                             $("#@ViewData.ModelMetadata.AdditionalValues["FieldName"]").val(responseJSON.fileid);
+                             $("#image").hide();
+                             $("#image").show();
+                             $("#image").html("<a href='"+ responseJSON.full +"'><img  width='"+100 +"' height='"+70+"' src='" + responseJSON.fullpdf + "'/></a>");
+
+                             $("#remove").show();
+                         }
+                         else{
+                             alert("Error: " + responseJSON.error);
+                         }
+                     }
+
+                 }
+               })
+
+        $("#remove").click(function (e) {
+            //alert(@randomString);
+                     $.ajax({
+                         url: '@Url.Action("Delete", "picture")',
+                         data: { picid: $('#@ViewData.ModelMetadata.AdditionalValues["FieldName"]').val() },
+                         type: "POST",
+                         success: function (response) {
+                             $("#@ViewData.ModelMetadata.AdditionalValues["FieldName"]").val(null);
+                             //alert(response.name);
+                         },
+                         error: function (response) {
+                             alert("An error has occured!!!");
+                         }
+                     });
+
+                    $("#image").html("<img src=''/>");
+                    $(this).hide();
+                });
+
+           });
+</script>
+
+
+
+

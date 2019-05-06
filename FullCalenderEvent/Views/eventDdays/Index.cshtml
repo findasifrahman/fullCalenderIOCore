@@ -1,39 +1,87 @@
-﻿@model IEnumerable<FullCalenderEvent.Models.eventDday>
-
+﻿
+@model PagedList.IPagedList<FullCalenderEvent.Models.eventDday>
+@using PagedList.Mvc;
+ 
 @{
-    ViewBag.Title = "Index";
+    Layout = "~/Views/Shared/_adminLayout.cshtml";
+    ViewBag.Title = "All event list";
 }
+<style>
+    .fieldset.scheduler-border {
+        border: 1px groove #ddd !important;
+        padding: 0 1.4em 1.4em 1.4em !important;
+        margin: 0 0 1.5em 0 !important;
+        -webkit-box-shadow: 0px 0px 0px 0px #000;
+        box-shadow: 0px 0px 0px 0px #000;
+    }
 
-<h2>Index</h2>
+    .legend.scheduler-border {
+        font-size: 1.2em !important;
+        font-weight: bold !important;
+        text-align: left !important;
+    }
+</style>
+<div class="container" style="padding-left:30px">
+    <h2 style="text-align:center;font-weight:bolder;color:royalblue">Dashboard</h2>
+    <br/>
+    <div class="row">
+        <fieldset style="font-size:small" class="scheduler-border">
+            <legend style="font-size:small;color:darkblue" class="scheduler-border">Desk Event Create</legend>
+            <div class="col-md-1"></div>
+            <div class="col-md-2">
+                @Html.ActionLink("DDNT Desk", "Create", new { ename = "DDNT" }, new { @style = "padding:5px 10px;width:150px", @class = "btn btn-info" })
+            </div>
+            <div class="col-md-2">
+                @Html.ActionLink("SO(T)-I Desk", "Create", new { ename = "SOTI" }, new { @style = "padding:5px 10px;background-color:red;width:150px", @class = "btn btn-info" })
+            </div>
+            <div class="col-md-2">
+                @Html.ActionLink("SO(T)-II Desk", "Create", new { ename = "SOTII" }, new { @style = "padding:5px 10px;background-color:blue;width:150px", @class = "btn btn-info" })
+            </div>
+            <div class="col-md-2">
+                @Html.ActionLink("OIC-TDEC Desk", "Create", new { ename = "OICTDEC" }, new { @style = "padding:5px 10px;background-color:green;width:150px", @class = "btn btn-info" })
+            </div>
+            <div class="col-md-2">
+                @Html.ActionLink("PA Desk", "Create", new { ename = "PA" }, new { @style = "padding:5px 10px;background-color:orange;color:black;width:150px", @class = "btn btn-info" })
+            </div>
+            <div class="col-md-1"></div>
+         </fieldset>
+    </div>
+    <br/>
+    @using (Html.BeginForm("Index", "eventDdays"))
+    {
+        <p>
+            Find by Event: @Html.TextBox("SearchString")
+            <input type="submit" value="Search By Event"  class="btn btn-info"/>
+        </p>
+    }
+    <table class="table table-bordered table-striped">
+        <tr>
+            <th>
+                Event Name
+            </th>
+            <th>
+                Date
+            </th>
+            <th></th>
+        </tr>
 
-<p>
-    @Html.ActionLink("Create New", "Create")
-</p>
-<table class="table">
-    <tr>
-        <th>
-            @Html.DisplayNameFor(model => model.EventDay)
-        </th>
-        <th>
-            @Html.DisplayNameFor(model => model.Dday)
-        </th>
-        <th></th>
-    </tr>
+    @foreach (var item in Model) {
+        <tr>
+            <td>
+                @Html.DisplayFor(modelItem => item.EventDay)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.Dday)
+            </td>
+            <td style="text-align:right">
+                @Html.ActionLink("Edit", "Edit", new { id=item.Id }, new { @style = "padding:5px 10px;background-color:black", @class = "btn btn-info" }) |
+                @Html.ActionLink("Details", "Details", new { id=item.Id }, new { @style = "padding:5px 10px;background-color:black", @class = "btn btn-info" }) |
+                @Html.ActionLink("Delete", "Delete", new { id=item.Id }, new { @style = "padding:5px 10px;background-color:black", @class = "btn btn-info" })
+            </td>
+        </tr>
+    }
 
-@foreach (var item in Model) {
-    <tr>
-        <td>
-            @Html.DisplayFor(modelItem => item.EventDay)
-        </td>
-        <td>
-            @Html.DisplayFor(modelItem => item.Dday)
-        </td>
-        <td>
-            @Html.ActionLink("Edit", "Edit", new { id=item.Id }) |
-            @Html.ActionLink("Details", "Details", new { id=item.Id }) |
-            @Html.ActionLink("Delete", "Delete", new { id=item.Id })
-        </td>
-    </tr>
-}
-
-</table>
+    </table>
+    Page @(Model.PageCount < Model.PageNumber ? 0 : Model.PageNumber) of @Model.PageCount
+    @Html.PagedListPager(Model, page => Url.Action("Index", new { page }))
+</div>

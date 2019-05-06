@@ -1,0 +1,104 @@
+﻿@model FullCalenderEvent.Models.eventDday
+@{
+    ViewBag.Title = "Details";
+}
+<style>
+    .fieldset.scheduler-border {
+        border: 1px groove #ddd !important;
+        padding: 0 1.4em 1.4em 1.4em !important;
+        margin: 0 0 1.5em 0 !important;
+        -webkit-box-shadow: 0px 0px 0px 0px #000;
+        box-shadow: 0px 0px 0px 0px #000;
+    }
+    .legend.scheduler-border {
+        font-size: 1.2em !important;
+        font-weight: bold !important;
+        text-align: left !important;
+    }
+</style>
+@section Scripts{
+    <script>
+        function PrintDiv(elem) {
+            var printContents = document.getElementById(elem).innerHTML;
+            var originalContents = document.body.innerHTML;
+
+            document.body.innerHTML = printContents;
+
+            window.print();
+
+            document.body.innerHTML = originalContents;
+
+            return true;
+        }
+    </script>
+    <script>
+        $(document).ready(function () {
+            function PrintDiv(divName)
+            {
+                var printContents = document.getElementById(divName).innerHTML;
+                var originalContents = document.body.innerHTML;
+                document.body.innerHTML = printContents;
+                window.print();
+                document.body.innerHTML = originalContents;
+            }
+        })
+    </script>
+}
+<div class="container" id="printDiv" name="printDiv">
+    <h2 style="text-align:center;font-weight:bolder;color:royalblue">Details of @Model.EventDay</h2>
+    <div>
+        <hr />
+        <dl class="dl-horizontal">
+            <dt style="color:blue">
+                Event :
+            </dt>
+
+            <dd>
+                @Html.DisplayFor(model => model.EventDay)
+            </dd>
+
+            <dt style="color:orangered">
+                Submission Day
+            </dt>
+
+            <dd>
+                @Html.DisplayFor(model => model.Dday)
+            </dd>
+
+        </dl>
+    </div>
+    <hr />
+    <fieldset>
+        <legend style="font-size:small;color:darkblue" class="scheduler-border">Event Details</legend>
+        <table class="table table-bordered table-striped">
+            <tr style="color:dodgerblue">
+                <th style="color:darkblue">
+                    Subject
+                </th>
+                <th style="text-align:center">
+                    Desccription
+                </th>
+                <th style="text-align:right">Date</th>
+            </tr>
+
+            @foreach (var item in Model.DdayDetails)
+            {
+                <tr>
+                    <td>
+                        @Html.DisplayFor(modelItem => item.Subject)
+                    </td>
+                    <td style="text-align:center">
+                        @Html.DisplayFor(modelItem => item.Description)
+                    </td>
+                    <td style="color:forestgreen;text-align:right">
+                        @Html.DisplayFor(modelItem => item.start) to @Html.DisplayFor(modelItem => item.end)
+                    </td>
+                </tr>
+            }
+        </table>
+    </fieldset>
+    <br/>
+</div>
+<div class="container" style="text-align:center">
+    <button class="btn btn-danger" style="width:20%" onclick="PrintDiv('printDiv')">Print</button>
+</div>

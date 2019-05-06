@@ -1,7 +1,9 @@
 ﻿using FullCalenderEvent.Models;
 using System;
 using System.Collections.Generic;
+using System.Data.Entity;
 using System.Linq;
+using System.Net;
 using System.Web;
 using System.Web.Mvc;
 
@@ -12,12 +14,19 @@ namespace FullCalenderEvent.Controllers
         private ApplicationDbContext db = new ApplicationDbContext();
         public ActionResult Index(int? Id)
         {
-            ViewBag.dlist = db.eventDdays.ToList();
+            var datetime = DateTime.Now;
+            ViewBag.dlist = db.eventDdays.Where(x => DbFunctions.TruncateTime(x.Dday) >= datetime).ToList();
             if(Id != null)
             {
-                return View(db.DdayDetails.Where(x=> x.eventDdayId == Id).ToList());
+                var cd = db.eventDdays.Where(x => x.Id == Id).FirstOrDefault();
+                ViewBag.curdate = cd.Dday;
+                return View(db.eventDdays.Where(x => x.Id == Id ).Include(x => x.DdayDetails).ToList());//db.DdayDetails.Where(x=> x.eventDdayId == Id).ToList());
             }
-            return View(db.DdayDetails.ToList());//db.eventDdays.ToList());
+            return View(db.eventDdays.Include(x => x.DdayDetails).ToList());
+        }
+        public ActionResult archievView()
+        {
+            return View(db.eventFiles.ToList());
         }
         public ActionResult Indexpa(string dval)
         {
@@ -32,7 +41,19 @@ namespace FullCalenderEvent.Controllers
                 return new JsonResult { Data = events, JsonRequestBehavior = JsonRequestBehavior.AllowGet };
             }
         }
-
+        public ActionResult Details(int? id)
+        {
+            if (id == null)
+            {
+                return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
+            }
+            eventDday eventDday = db.eventDdays.Include(x => x.DdayDetails).FirstOrDefault(x => x.Id == id);//.Find(id);
+            if (eventDday == null)
+            {
+                return HttpNotFound();
+            }
+            return View(eventDday);
+        }
         [HttpPost]
         public JsonResult SaveEvent(Event e)
         {
