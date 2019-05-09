@@ -12,6 +12,7 @@ namespace FullCalenderEvent.Models
         public int Id { get; set; }
         public string EventDay { get; set; }
         public DateTime Dday { get; set; }
+        public DateTime DdayEnd { get; set; }
         [UIHint("picture")]
         [AdditionalMetadata("FieldName", "ReFile")]
         public string ReFile { get; set; }

@@ -102,8 +102,14 @@
                 orderdate.setHours(12, orderdate.getTimezoneOffset(), 0, 0);
                 var date = new Date(orderdate);
                 var dts = date.toISOString();
+                var enddate = @Html.Raw(Json.Encode(Model.DdayEnd));
+                var orderdate2 = new Date(parseInt(enddate.replace("/Date(", "").replace(")/",""), 10));
+                orderdate2.setHours(12, orderdate2.getTimezoneOffset(), 0, 0);
+                var date2 = new Date(orderdate2);
+                var dts2 = date2.toISOString();
                 //alert(date.toLocaleString());
                 $("#Dday").val(dts.substring(0, dts.length - 1));
+                $("#DdayEnd").val(dts2.substring(0, dts.length - 1));
                 $("#start").val(dts.substring(0, dts.length - 1));
                 $("#end").val(dts.substring(0, dts.length - 1));
 
@@ -255,6 +261,7 @@
                     Id: @Model.Id,
                     EventDay: $('#EventDay').val().trim(),
                     Dday: $('#Dday').val().trim(),
+                    DdayEnd: $('#DdayEnd').val().trim(),
                     mainColor: $('#mainColor').val().trim(),
                     isFullDayMain: $('#isFullDayMain').is(":checked") || false,
                     DdayDetails: DdayDetails
@@ -302,29 +309,20 @@
         <fieldset style="font-size:small" class="scheduler-border">
             <legend style="font-size:small;color:darkblue" class="scheduler-border">Update Event</legend>
             <div class="row col-md-12">
-                <div class="col-md-4">
+                <div class="col-md-6">
                     <div class="form-group">
                         @Html.Label("Event*", htmlAttributes: new { @class = "control-label col-md-3", @style = "color:red" })
                         <div class="col-md-9">
-                            <input type="text" value="@Model.EventDay" id="EventDay" class="form-control input-sm" onkeypress="return IsAlphaNumeric(event);"
-                                   ondrop="return false;" onpaste="return IsAlphaNumeric(event);" />
+                            <input type="text" value="@Model.EventDay" id="EventDay" class="form-control input-sm" />
                             <span class="error text-danger"></span>
                         </div>
                     </div>
                 </div>
-                <div class="col-md-3">
+
+                <div class="col-md-4">
                     <div class="form-group">
-                        @Html.Label("Dday*", htmlAttributes: new { @class = "control-label col-md-2", @style = "color:red" })
-                        <div class="col-md-10">
-                            <input type="datetime-local" id="Dday" name="Dday" class="form-control input-sm" value="2019-04-01T00:00" />
-                            <span class="error text-danger"></span>
-                        </div>
-                    </div>
-                </div>
-                <div class="col-md-3">
-                    <div class="form-group">
-                        @Html.Label("Color", htmlAttributes: new { @class = "control-label col-md-6", @style = "color:red" })
-                        <div class="col-md-6">
+                        @Html.Label("Color", htmlAttributes: new { @class = "control-label col-md-5", @style = "color:red" })
+                        <div class="col-md-7">
                             <input class="form-control input-sm" name="mainColor" id="mainColor" type="text" value="@ViewBag.colorval" disabled />
                         </div>
                     </div>
@@ -339,6 +337,26 @@
                     </div>
                 </div>
 
+            </div>
+            <div class="row col-md-12">
+                <div class="col-md-6">
+                    <div class="form-group">
+                        @Html.Label("Dday Start*", htmlAttributes: new { @class = "control-label col-md-5", @style = "color:red" })
+                        <div class="col-md-5">
+                            <input type="datetime-local" id="Dday" name="Dday" class="form-control input-sm" value="2019-04-01T00:00" />
+                            <span class="error text-danger"></span>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-6">
+                    <div class="form-group">
+                        @Html.Label("Dday End*", htmlAttributes: new { @class = "control-label col-md-5", @style = "color:red" })
+                        <div class="col-md-5">
+                            <input type="datetime-local" id="DdayEnd" name="DdayEnd" class="form-control input-sm" value="2019-04-01T00:00" />
+                            <span class="error text-danger"></span>
+                        </div>
+                    </div>
+                </div>
             </div>
         </fieldset>
         <br />

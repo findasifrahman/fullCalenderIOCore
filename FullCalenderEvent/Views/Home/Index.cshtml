@@ -156,6 +156,7 @@
                         $.each(arr, function (i, v) {
                             console.log(v.DdayDetails[0]);
                             var stdate = new Date(parseInt(v.Dday.replace("/Date(", "").replace(")/",""), 10));
+                            var enddate = new Date(parseInt(v.DdayEnd.replace("/Date(", "").replace(")/",""), 10));
                             var tmphour = stdate.getHours().toString();
                             var tmpmin = stdate.getMinutes().toString();
                             if(parseInt(tmphour)<=9){
@@ -164,7 +165,7 @@
                             if(parseInt(tmpmin)<=9){
                                 tmpmin = "0" + tmpmin;
                             }
-                            var sttime = tmphour+tmpmin;
+                            var sttime = tmphour + tmpmin;
                             var titlee = v.EventDay;
                             if(!v.isFullDayMain){
                                 titlee = sttime + "-" + titlee;
@@ -179,7 +180,7 @@
                                  title: titlee,//sttime + "-" + v.EventDay,
                                  groupId: v.DdayDetails,
                                  start: stdate,
-                                 //end: enddate,// != null ? enddate : null,
+                                 end: enddate,// != null ? enddate : null,
                                  color: col,
                                  url: "/home/Details/" + v.Id,
                                  allDay: true//v.isFullDayMain

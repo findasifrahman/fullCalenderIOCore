@@ -62,6 +62,26 @@
         $(document).ready(function () {
             var tableIndex = 0;
 
+            mf();
+            function mf() {
+
+                var sqldate = @Html.Raw(Json.Encode(DateTime.Now));
+                var orderdate = new Date(parseInt(sqldate.replace("/Date(", "").replace(")/",""), 10));
+                orderdate.setHours(12, orderdate.getTimezoneOffset(), 0, 0);
+                var date = new Date(orderdate);
+                var dts = date.toISOString();
+                var enddate = @Html.Raw(Json.Encode(DateTime.Now.AddDays(1)));
+                var endorderdate = new Date(parseInt(enddate.replace("/Date(", "").replace(")/",""), 10));
+                endorderdate.setHours(12, endorderdate.getTimezoneOffset(), 0, 0);
+                var date2 = new Date(endorderdate);
+                var dts2 = date2.toISOString();
+                //alert(date.toLocaleString());
+                $("#Dday").val(dts.substring(0, dts.length - 1));
+                $("#DdayEnd").val(dts2.substring(0, dts.length - 1));
+                $("#start").val(dts.substring(0, dts.length - 1));
+                $("#end").val(dts2.substring(0, dts.length - 1));
+            }
+
             $('#Subject').siblings('span.error').css('visibility', 'hidden');
             $('#Description').siblings('span.error').css('visibility', 'hidden');
             $('#start').siblings('span.error').css('visibility', 'hidden');
@@ -70,6 +90,7 @@
                 $("#Subject").val($('#EventDay').val() + " - 0");
                 //alert("The text has been changed.");
             });
+
             function keyevent() {
                 var vr = $("#Subject").val().match(/\d+/)
                 if (vr != null) {
@@ -98,7 +119,7 @@
                     var date = new Date($("#Dday").val());
                     var newdate = new Date(date);
                     newdate.setHours(-12, newdate.getTimezoneOffset(), 0, 0);// Remove Time Zone Offset
-                
+
 
 
                 newdate.setDate(newdate.getDate() + 1);
@@ -108,7 +129,7 @@
                 dts = newdate.toISOString();
                 $("#end").val(dts.substring(0, dts.length - 1));
             };
-            
+
 
             $("#Dday").change(function () {
                 changeDateVal();
@@ -125,7 +146,7 @@
                     alert("Please add a Subject");
                     return;
                 }
-                
+
 
                 if (isValidItem)
                 {
@@ -198,6 +219,7 @@
                     var data = {
                         EventDay: $('#EventDay').val().trim(),
                         Dday: $('#Dday').val().trim(),
+                        DdayEnd: $('#DdayEnd').val().trim(),
                         mainColor: $('#mainColor').val().trim(),
                         isFullDayMain: $('#isFullDayMain').is(":checked") || false,
                         DdayDetails: DdayDetails
@@ -242,29 +264,20 @@
         <fieldset style="font-size:small" class="scheduler-border">
             <legend style="font-size:small;color:darkblue" class="scheduler-border">Create New Event</legend>
             <div class="row col-md-12">
-                <div class="col-md-4">
+                <div class="col-md-6">
                     <div class="form-group">
                         @Html.Label("Event*", htmlAttributes: new { @class = "control-label col-md-3",@style = "color:red" })
                         <div class="col-md-9">
-                            <input type="text" id="EventDay" class="form-control input-sm" onkeypress="return IsAlphaNumeric(event);"
-                                   ondrop="return false;" onpaste="return IsAlphaNumeric(event);" />
+                            <input type="text" id="EventDay" class="form-control input-sm" />
                             <span class="error text-danger"></span>
                         </div>
                     </div>
                 </div>
-                <div class="col-md-3">
+
+                <div class="col-md-4">
                     <div class="form-group">
-                        @Html.Label("Dday*", htmlAttributes: new { @class = "control-label col-md-2", @style = "color:red" })
-                        <div class="col-md-10">
-                            <input type="datetime-local" id="Dday" name="Dday" class="form-control input-sm" value="2019-04-01T00:00" />
-                            <span class="error text-danger"></span>
-                        </div>
-                    </div>
-                </div>
-                <div class="col-md-3">
-                    <div class="form-group">
-                        @Html.Label("Color", htmlAttributes: new { @class = "control-label col-md-6", @style = "color:red" })
-                        <div class="col-md-6">
+                        @Html.Label("Color", htmlAttributes: new { @class = "control-label col-md-5", @style = "color:red" })
+                        <div class="col-md-7">
                             <input class="form-control input-sm" name="mainColor" id="mainColor" type="text" value="@ViewBag.colorval" disabled />
                         </div>
                     </div>
@@ -279,6 +292,26 @@
                     </div>
                 </div>
 
+            </div>
+            <div class="row col-md-12">
+                <div class="col-md-6">
+                    <div class="form-group">
+                        @Html.Label("Dday Start*", htmlAttributes: new { @class = "control-label col-md-5", @style = "color:red" })
+                        <div class="col-md-5">
+                            <input type="datetime-local" id="Dday" name="Dday" class="form-control input-sm" value="2019-04-01T00:00" />
+                            <span class="error text-danger"></span>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-6">
+                    <div class="form-group">
+                        @Html.Label("Dday End*", htmlAttributes: new { @class = "control-label col-md-5", @style = "color:red" })
+                        <div class="col-md-5">
+                            <input type="datetime-local" id="DdayEnd" name="DdayEnd" class="form-control input-sm" value="2019-04-01T00:00" />
+                            <span class="error text-danger"></span>
+                        </div>
+                    </div>
+                </div>
             </div>
 
         </fieldset>

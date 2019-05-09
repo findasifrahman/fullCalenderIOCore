@@ -518,3 +518,4 @@ C:\Users\User\Desktop\FullCalenderEvent\FullCalenderEvent\obj\Debug\FullCalender
 C:\Users\Asif\Desktop\FullCalenderEvent\FullCalenderEvent\obj\Debug\FullCalenderEvent.Migrations.c4.resources
 C:\Users\User\Desktop\FullCalenderEvent\FullCalenderEvent\obj\Debug\FullCalenderEvent.Migrations.c6.resources
 C:\Users\Asif\Desktop\FullCalenderEvent\FullCalenderEvent\obj\Debug\FullCalenderEvent.Migrations.c6.resources
+C:\Users\Asif\Desktop\FullCalenderEvent\FullCalenderEvent\obj\Debug\FullCalenderEvent.Migrations.c7.resources

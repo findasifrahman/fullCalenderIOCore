@@ -15,6 +15,7 @@ namespace FullCalenderEvent.Controllers
         public ActionResult Index(int? Id)
         {
             var datetime = DateTime.Now;
+            ViewBag.curdate = datetime;
             ViewBag.dlist = db.eventDdays.Where(x => DbFunctions.TruncateTime(x.Dday) >= datetime).ToList();
             if(Id != null)
             {
