@@ -62,8 +62,27 @@
         $(document).ready(function () {
             var tableIndex = 0;
 
+            $('#isFullDayMain').click(function(){
+                var ddaydiv = document.getElementById('ddaydiv');
+                var ddaydiv2 = document.getElementById('ddaydiv2');
+                if($('#isFullDayMain').is(":checked") ){
+                    ddaydiv.style.display = "none";
+                    ddaydiv2.style.display = "block";
+
+                }
+                else{
+                    ddaydiv.style.display = "block";
+                    ddaydiv2.style.display = "none";
+                }
+            })
             mf();
             function mf() {
+                ///
+                var ddaydiv = document.getElementById('ddaydiv');
+                var ddaydiv2 = document.getElementById('ddaydiv2');
+                ddaydiv.style.display = "block";
+                ddaydiv2.style.display = "none";
+                ///
 
                 var sqldate = @Html.Raw(Json.Encode(DateTime.Now));
                 var orderdate = new Date(parseInt(sqldate.replace("/Date(", "").replace(")/",""), 10));
@@ -78,6 +97,10 @@
                 //alert(date.toLocaleString());
                 $("#Dday").val(dts.substring(0, dts.length - 1));
                 $("#DdayEnd").val(dts2.substring(0, dts.length - 1));
+
+                $("#Dday2").val(dts.substring(0, dts.length - 14));
+                $("#DdayEnd2").val(dts2.substring(0, dts.length - 14));
+
                 $("#start").val(dts.substring(0, dts.length - 1));
                 $("#end").val(dts2.substring(0, dts.length - 1));
             }
@@ -104,6 +127,7 @@
                     newdate.setDate(newdate.getDate() + 1);
                     dts = newdate.toISOString();
                     $("#end").val(dts.substring(0, dts.length - 1));
+
                 }
             }
             $("#Subject").keypress(function () {
@@ -115,24 +139,46 @@
             $("#Subject").keyup(function () {
                 keyevent();
             });
-            function changeDateVal() {
-                    var date = new Date($("#Dday").val());
+            function changeDateVal(field) {
+                    var date = new Date(field);
                     var newdate = new Date(date);
                     newdate.setHours(-12, newdate.getTimezoneOffset(), 0, 0);// Remove Time Zone Offset
 
+                    newdate.setDate(newdate.getDate() + 1);
+                    var dts = newdate.toISOString();
 
+                    $("#DdayEnd").val(dts.substring(0, dts.length - 1));
+
+                    $("#start").val(dts.substring(0, dts.length - 1));
+                    newdate.setDate(newdate.getDate() + 0);
+                    dts = newdate.toISOString();
+                    $("#end").val(dts.substring(0, dts.length - 1));
+                
+            };
+            ///
+            function changeDateVal2(field) {
+                var date = new Date(field);
+                var newdate = new Date(date);
+                newdate.setHours(-12, newdate.getTimezoneOffset(), 0, 0);// Remove Time Zone Offset
 
                 newdate.setDate(newdate.getDate() + 1);
                 var dts = newdate.toISOString();
+
+                $("#DdayEnd2").val(dts.substring(0, dts.length - 14));
+
                 $("#start").val(dts.substring(0, dts.length - 1));
                 newdate.setDate(newdate.getDate() + 0);
                 dts = newdate.toISOString();
                 $("#end").val(dts.substring(0, dts.length - 1));
+                
             };
-
+            ///
 
             $("#Dday").change(function () {
-                changeDateVal();
+                changeDateVal($('#Dday').val());
+            });
+            $("#Dday2").change(function () {
+                changeDateVal2($('#Dday2').val());
             });
             var DdayDetails = [];
 
@@ -212,14 +258,29 @@
                 else {
                     $('#Dday').siblings('span.error').css('visibility', 'hidden');
                 }
-
+                var Ddayval;
+                var DdayvalEnd;
+                if($('#isFullDayMain').is(":checked") ){
+                    Ddayval = $('#Dday2').val().trim();
+                    var date = new Date($("#DdayEnd2").val());
+                    var newdate = new Date(date);
+                    newdate.setDate(newdate.getDate() + 1);
+                    var dts = newdate.toISOString();
+                    DdayvalEnd = dts.substring(0, dts.length - 1);
+                    //alert(dts.substring(0, dts.length - 1));
+                    //var dts = newdate.toISOString();
+                }
+                else{
+                    Ddayval = $('#Dday').val().trim();
+                    DdayvalEnd = $('#DdayEnd').val().trim();
+                }
                 //if (isAllValid)
                 {
 
                     var data = {
                         EventDay: $('#EventDay').val().trim(),
-                        Dday: $('#Dday').val().trim(),
-                        DdayEnd: $('#DdayEnd').val().trim(),
+                        Dday: Ddayval,
+                        DdayEnd: DdayvalEnd,
                         mainColor: $('#mainColor').val().trim(),
                         isFullDayMain: $('#isFullDayMain').is(":checked") || false,
                         DdayDetails: DdayDetails
@@ -293,7 +354,7 @@
                 </div>
 
             </div>
-            <div class="row col-md-12">
+            <div class="row col-md-12" id="ddaydiv">
                 <div class="col-md-6">
                     <div class="form-group">
                         @Html.Label("Dday Start*", htmlAttributes: new { @class = "control-label col-md-5", @style = "color:red" })
@@ -313,7 +374,26 @@
                     </div>
                 </div>
             </div>
-
+            <div class="row col-md-12" id="ddaydiv2">
+                <div class="col-md-6">
+                    <div class="form-group">
+                        @Html.Label("Dday Start*", htmlAttributes: new { @class = "control-label col-md-5", @style = "color:red" })
+                        <div class="col-md-5">
+                            <input type="date" id="Dday2" name="Dday2" class="form-control input-sm" value="2019-04-01T00:00" />
+                            <span class="error text-danger"></span>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-6">
+                    <div class="form-group">
+                        @Html.Label("Dday End*", htmlAttributes: new { @class = "control-label col-md-5", @style = "color:red" })
+                        <div class="col-md-5">
+                            <input type="date" id="DdayEnd2" name="DdayEnd2" class="form-control input-sm" value="2019-04-01T00:00" />
+                            <span class="error text-danger"></span>
+                        </div>
+                    </div>
+                </div>
+            </div>
         </fieldset>
         <br />
 

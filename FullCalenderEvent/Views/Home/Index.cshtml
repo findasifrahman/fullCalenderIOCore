@@ -137,6 +137,7 @@
             var calendar;
             var events = [];
             var selectedEvent = null;
+
             FetchEventAndRenderCalendar();
             function FetchEventAndRenderCalendar() {
                 var ss =  @Html.Raw(Json.Encode(ViewBag.curdate));
@@ -157,6 +158,7 @@
                             console.log(v.DdayDetails[0]);
                             var stdate = new Date(parseInt(v.Dday.replace("/Date(", "").replace(")/",""), 10));
                             var enddate = new Date(parseInt(v.DdayEnd.replace("/Date(", "").replace(")/",""), 10));
+                            //alert(enddate);
                             var tmphour = stdate.getHours().toString();
                             var tmpmin = stdate.getMinutes().toString();
                             if(parseInt(tmphour)<=9){
@@ -183,7 +185,7 @@
                                  end: enddate,// != null ? enddate : null,
                                  color: col,
                                  url: "/home/Details/" + v.Id,
-                                 allDay: true//v.isFullDayMain
+                                 allDay: v.isFullDayMain
                             });
                         })
 
@@ -196,6 +198,7 @@
                            maxTime: 24,
                            themeSystem: 'standard',//themeSystem,
                            defaultDate: defdate,
+                           displayEventTime: false,
                            height:550,
                             header: {
                                 left: 'prev,next today',
